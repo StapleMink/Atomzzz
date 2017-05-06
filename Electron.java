@@ -125,15 +125,15 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 				if (side.equals("left"))
 				{
 					setLocation(eOrbitals[index].getX() + 5, eOrbitals[index].getY() + 5);
-					eOrbitals[index].occupied[0]= true;
+					eOrbitals[index].occupied[0] = true;
 				}
 
 				else if (side.equals("right"))
 				{
 					setLocation(eOrbitals[index].getX() + 45, eOrbitals[index].getY() + 5);
-					eOrbitals[index].occupied[1]= true;
+					eOrbitals[index].occupied[1] = true;
 				}
-				
+
 			}
 			selected = false;
 		}
@@ -161,7 +161,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 		int orbitalY = eOrbitals[index].getY();
 		int orbitalWidth = eOrbitals[index].getWidth();
 		int orbitalHeight = eOrbitals[index].getHeight();
-		
+
 		if ((centerX >= orbitalX) && (centerX <= (orbitalX + orbitalWidth)))
 		{
 			if ((centerY >= orbitalY) && (centerY <= (orbitalY + orbitalHeight)))
@@ -169,14 +169,24 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 				if (centerX < ((0.5 * orbitalWidth) + orbitalX))
 				{
 					if (!eOrbitals[index].occupied[0])
+					{
 						side = "left";
-					else return false;
+					}
+					else
+					{
+						return false;
+					}
 				}
 				else
 				{
 					if (!eOrbitals[index].occupied[1])
-					side = "right";
-					else return false;
+					{
+						side = "right";
+					}
+					else
+					{
+						return false;
+					}
 				}
 
 				return true;

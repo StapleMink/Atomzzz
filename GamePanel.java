@@ -1,7 +1,8 @@
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.Color;
 
 import javax.swing.JButton;
 import javax.swing.JPanel;
@@ -14,8 +15,9 @@ public class GamePanel extends JPanel implements ActionListener
 	protected int lives, level, eAdded, eNeeded;
 	protected boolean passed, selected;
 	protected boolean[] errors;
+	private Image nucleus;
 
-	public GamePanel()
+	public GamePanel(MainPanel mp)
 	{
 		setLayout(null);
 		setSize(800, 450);
@@ -44,12 +46,17 @@ public class GamePanel extends JPanel implements ActionListener
 		complete = new JButton("Complete");
 
 		orbitals[0].setLocation(360, 50);
+		orbitals[1].setLocation(175, 90);
 
-		for (int i = 0; i < 4; i++)
+		for (int i = 2; i < 4; i++)
 		{
-			orbitals[i + 1].setLocation(96 + (i * 176), 130);
-			orbitals[i + 5].setLocation(96 + (i * 176), 200);
+			orbitals[i].setLocation(96 + ((i - 1) * 176), 130);
 		}
+		orbitals[4].setLocation(545, 90);
+		/*
+		 * for (int i = 0; i < 4; i++) { orbitals[i + 1].setLocation(96 + (i *
+		 * 176), 130); orbitals[i + 5].setLocation(96 + (i * 176), 200); }
+		 */
 
 		for (int i = 0; i < 9; i++)
 		{
@@ -100,11 +107,9 @@ public class GamePanel extends JPanel implements ActionListener
 	public void checkAfbau() // called everytime an electron is placed
 	{ // checks is user has violated the Afbau principle
 		// (filled higher energy
-													// orbital before lower one)
+		// orbital before lower one)
 		System.out.println("checking");
-	
-		
-		
+
 	}
 
 	@Override
@@ -117,12 +122,21 @@ public class GamePanel extends JPanel implements ActionListener
 	{
 		setBackground(Color.BLACK);
 		super.paintComponent(g);
-		
+
 		g.setColor(Color.CYAN);
-		g.fillArc(200, -400,  400, 480, 0, -180);
-		
+		g.fillOval(30, -330, 760, 575);
 		g.setColor(Color.BLACK);
-		g.fillArc(200, -400, 400, 470, 0, -180);
+		g.fillOval(35, -330, 750, 565);
+
+		g.setColor(Color.CYAN);
+		g.fillOval(100, -400, 600, 575);
+		g.setColor(Color.BLACK);
+		g.fillOval(105, -400, 590, 565);
+
+		g.setColor(Color.CYAN);
+		g.fillOval(170, -370, 460, 480);
+		g.setColor(Color.BLACK);
+		g.fillOval(175, -370, 450, 470);
 	}
 
 }
