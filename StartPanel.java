@@ -87,7 +87,7 @@ public class StartPanel extends JPanel
 										// was clicked and how to react
 			{
 				System.out.println("Start Game");
-				mp.getCards().show(mp.gp, "start");
+				mp.cards.next(mp);
 			}
 			if (command.equals("How To Play"))
 			{

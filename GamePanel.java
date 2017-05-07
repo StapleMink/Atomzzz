@@ -43,8 +43,6 @@ public class GamePanel extends JPanel implements ActionListener
 			orbitals[i] = new Orbital("4p");
 		}
 
-		complete = new JButton("Complete");
-
 		orbitals[0].setLocation(360, 50);
 		orbitals[1].setLocation(175, 90);
 
@@ -102,6 +100,11 @@ public class GamePanel extends JPanel implements ActionListener
 		{
 			errors[i] = false;
 		}
+
+		complete = new JButton("Complete");
+		complete.addActionListener(this);
+		complete.setLocation(700, 200);
+		add(complete);
 	}
 
 	public void checkAfbau() // called everytime an electron is placed
