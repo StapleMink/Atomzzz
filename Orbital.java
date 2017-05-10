@@ -1,9 +1,9 @@
+
 /* Gaurav Datta
  * 5/1/17
  * Orbital.java
  * Panel that represents an orbital that electrons are placed in
  */
-
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -12,14 +12,15 @@ import javax.swing.JPanel;
 
 public class Orbital extends JPanel
 {
-	private boolean[] occupied;
-	private Electron[] orbitalE;
-	private int principleLevel;
-	private char subLevel;
-	private String name;
+
+	private final boolean[] occupied;
+	private final Electron[] orbitalE;
+	private final int principleLevel;
+	private final char subLevel;
+	private final String name;
 	private int numE;
-	
-	//constructor: initialize fields
+
+	// constructor: initialize fields
 	public Orbital(String nameIn, GamePanel gp)
 	{
 		setLayout(null);
@@ -34,7 +35,7 @@ public class Orbital extends JPanel
 		setSize(80, 40);
 	}
 
-	//these methods all return field variables so they can be private
+	// these methods all return field variables so they can be private
 	public boolean[] getOccupied()
 	{
 		return occupied;
@@ -64,9 +65,15 @@ public class Orbital extends JPanel
 	{
 		numE++;
 	}
-	
 
-	//draw orbital in different color depending on name
+	@Override
+	public String getName()
+	{
+		return name;
+	}
+
+	// draw orbital in different color depending on name
+	@Override
 	public void paintComponent(Graphics g)
 	{
 		setBackground(Color.BLACK);
@@ -91,6 +98,5 @@ public class Orbital extends JPanel
 		g.drawLine(40, 5, 40, 35);
 
 	}
-
 
 }

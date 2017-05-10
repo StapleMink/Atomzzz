@@ -1,3 +1,4 @@
+
 /* Gaurav Datta
  * 5/1/17
  * Electron.java
@@ -11,6 +12,7 @@ import java.awt.Graphics;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+
 import javax.swing.JPanel;
 
 public class Electron extends JPanel implements MouseMotionListener, MouseListener
@@ -27,7 +29,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	private final GamePanel game;
 	private int wherePlaced;
 	private boolean lastMoved;
-	
+
 	// constructor: initialize fields
 	public Electron(boolean spinIn, GamePanel gp)
 	{
@@ -49,8 +51,8 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	}
 
 	/*
-	 * The next several methods all return  set a field variable so that they
-	 * may remain private;
+	 * The next several methods all return set a field variable so that they may
+	 * remain private;
 	 */
 	public void setOrigX(int origX)
 	{
@@ -91,9 +93,9 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	{
 		this.lastMoved = lastMovedIn;
 	}
-	
 
-	//draw yellow circle to represent electron and arrow for spin	
+	// draw yellow circle to represent electron and arrow for spin
+	@Override
 	public void paintComponent(Graphics g)
 	{
 		g.setColor(Color.YELLOW);
@@ -119,11 +121,12 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 			 */
 		}
 	}
-	
-	//method for dragging electron, if not in orbital
+
+	// method for dragging electron, if not in orbital
+	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		if (!inOrbital)
+		if (!inOrbital && !game.getDone())
 		{
 			selected = true;
 			int changeX = (e.getX() - pressX);
@@ -136,15 +139,18 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 
 	}
 
+	@Override
 	public void mouseMoved(MouseEvent e)
 	{
 	}
 
+	@Override
 	public void mouseClicked(MouseEvent e)
 	{
 	}
-	
-	// gets coordinates where mouse is pressed to know where to drag	
+
+	// gets coordinates where mouse is pressed to know where to drag
+	@Override
 	public void mousePressed(MouseEvent e)
 	{
 		pressX = e.getX();
@@ -152,25 +158,26 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 
 	}
 
-	/* for after mouse drags electron
-	 * figures out if in orbital, then places,
+	/*
+	 * for after mouse drags electron figures out if in orbital, then places,
 	 * then checks if errors were made
-         */
-	public void mouseReleased(MouseEvent e) 
+	 */
+	@Override
+	public void mouseReleased(MouseEvent e)
 	{
 		if (selected && !inOrbital)
 		{
 			int index = 0;
 			inOrbital = false;
-			
-			//checks each orbital to see if inside
-			for (index = 0; (index < 18) && !inOrbital; index++) 
+
+			// checks each orbital to see if inside
+			for (index = 0; (index < 18) && !inOrbital; index++)
 			{
 				inOrbital = isInOrbital(index);
 			}
-			
-			//returns to original position if not in orbital
-			if (!inOrbital) 
+
+			// returns to original position if not in orbital
+			if (!inOrbital)
 			{
 				setLocation(getOrigX(), getOrigY());
 			}
@@ -178,39 +185,50 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 			else
 			{
 				index--;
-				wherePlaced = index;  // field that can be accessed later
-				
-				//places electron in right or left side, tells orbital it has occupant and instantiates an electron there with same spin
+				wherePlaced = index; // field that can be accessed later
+				System.out.println(wherePlaced);
+				// places electron in right or left side, tells orbital it has
+				// occupant and instantiates an electron there with same spin
 				if (side.equals("left"))
 				{
-					setLocation(game.getOrbitals()[index].getX() + 5, game.getOrbitals()[index].getY() + 5); 
-					game.getOrbitals()[index].getOccupied()[0] = true; 
-					game.getOrbitals()[index].getOrbitalE()[0] = new Electron(this.spin, game);
+					setLocation(game.getOrbitals()[index].getX() + 5, game.getOrbitals()[index].getY() + 5);
+					game.getOrbitals()[index].getOccupied()[0] = true;
 				}
 
 				else if (side.equals("right"))
 				{
 					setLocation(game.getOrbitals()[index].getX() + 45, game.getOrbitals()[index].getY() + 5);
 					game.getOrbitals()[index].getOccupied()[1] = true;
+				}
+
+				if (game.getOrbitals()[index].getOrbitalE()[0] == null)
+				{
+					game.getOrbitals()[index].getOrbitalE()[0] = new Electron(this.spin, game);
+				}
+
+				else
+				{
 					game.getOrbitals()[index].getOrbitalE()[1] = new Electron(this.spin, game);
 				}
-				
+
 				game.getOrbitals()[index].incrementNumE();
 				System.out.println(index + ": " + game.getOrbitals()[index].getNumE());
-				game.eAdded++;
-				// game.checkAfbau(wherePlaced);
+				game.seteAdded(game.geteAdded() + 1);
+				game.checkAfbau(wherePlaced);
 				game.checkPauli(wherePlaced);
 				game.checkHund(wherePlaced);
 			}
 			selected = false;
+			game.checkIfLost();
 		}
 	}
 
-
+	@Override
 	public void mouseEntered(MouseEvent e)
 	{
 	}
 
+	@Override
 	public void mouseExited(MouseEvent e)
 	{
 	}
@@ -220,40 +238,50 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	 * e- is in
 	 */
 	public boolean isInOrbital(int index)
-	{	
-		//data on orbital in question
-		int centerX = getX() + 15; 
+	{
+		// data on orbital in question
+		int centerX = getX() + 15;
 		int centerY = getY() + 15;
-		int orbitalX = game.getOrbitals()[index].getX(); 										int orbitalY = game.getOrbitals()[index].getY();
-		int orbitalWidth = game.getOrbitals()[index].getWidth(); 
+		int orbitalX = game.getOrbitals()[index].getX();
+		int orbitalY = game.getOrbitals()[index].getY();
+		int orbitalWidth = game.getOrbitals()[index].getWidth();
 		int orbitalHeight = game.getOrbitals()[index].getHeight();
 
-		if ((centerX >= orbitalX) && (centerX <= (orbitalX + orbitalWidth)))	//checking to see if e- located in orbital	
+		if ((centerX >= orbitalX) && (centerX <= (orbitalX + orbitalWidth))) // checking
+																				// to
+																				// see
+																				// if
+																				// e-
+																				// located
+																				// in
+																				// orbital
 		{
-			if ((centerY >= orbitalY) && (centerY <= (orbitalY + orbitalHeight)))														{
-				if (centerX < ((0.5 * orbitalWidth) + orbitalX)) 
+			if ((centerY >= orbitalY) && (centerY <= (orbitalY + orbitalHeight)))
+			{
+				if (centerX < ((0.5 * orbitalWidth) + orbitalX))
 				{
 					if (!game.getOrbitals()[index].getOccupied()[0])
 					{
-						side = "left"; 
+						side = "left";
 					}
 					else
 					{
-						return false; 
+						return false;
 					}
 				}
 				else
 				{
-					if (!game.getOrbitals()[index].getOccupied()[1]) 																{
+					if (!game.getOrbitals()[index].getOccupied()[1])
+					{
 						side = "right";
 					}
 					else
 					{
-						return false; 
+						return false;
 					}
 				}
 
-				return true; 
+				return true;
 			}
 			else
 			{
@@ -262,7 +290,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 		}
 		else
 		{
-			return false; 
+			return false;
 		}
 	}
 
