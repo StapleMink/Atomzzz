@@ -1,3 +1,4 @@
+
 /* Gaurav Datta
  * 5/1/17
  * GamePanel.java
@@ -18,14 +19,18 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements ActionListener
 {
-	private Orbital[] orbitals;
-	private Electron[] electrons;
-	private JButton complete;
-	private int lives, level, eAdded, eNeeded;
-	private boolean passed, selected;
-	private boolean[] errors;
+	private final Orbital[] orbitals;
+	private final Electron[] electrons;
+	private final JButton complete;
+	private int lives;
+	private final int level;
+	private int eAdded;
+	private final int eNeeded;
+	private final boolean passed, selected;
+	private final boolean[] errors;
 	private Image nucleus;
-	private Image heart;
+	private final Image heart;
+	private boolean done;
 
 	public GamePanel(MainPanel mp)
 	{
@@ -35,7 +40,7 @@ public class GamePanel extends JPanel implements ActionListener
 		orbitals = new Orbital[18]; // instantiate orbitals[]
 		orbitals[0] = new Orbital("1s", this);
 		orbitals[1] = new Orbital("2s", this); // each orbital gets this
-							// instance of GamePanel
+		// instance of GamePanel
 		for (int i = 2; i < 5; i++)
 		{
 			orbitals[i] = new Orbital("2p", this);
@@ -63,7 +68,7 @@ public class GamePanel extends JPanel implements ActionListener
 			orbitals[i].setLocation(96 + ((i - 1) * 176), 130);
 		}
 		orbitals[4].setLocation(545, 90);
-		
+
 		/*
 		 * for (int i = 0; i < 4; i++) { orbitals[i + 1].setLocation(96 + (i *
 		 * 176), 130); orbitals[i + 5].setLocation(96 + (i * 176), 200); }
@@ -75,7 +80,7 @@ public class GamePanel extends JPanel implements ActionListener
 		}
 
 		electrons = new Electron[36]; // instantiate electrons[] w/ instance of
-						// GamePanel and spin
+		// GamePanel and spin
 		for (int i = 0; i < 18; i++) // then set location
 		{
 			electrons[i] = new Electron(true, this);
@@ -117,156 +122,245 @@ public class GamePanel extends JPanel implements ActionListener
 
 		complete = new JButton("Complete"); // instantiate button for completion
 		complete.addActionListener(this);
-		complete.setLocation(700, 200);
+		complete.setLocation(690, 200);
+		complete.setSize(100, 30);
 		add(complete);
 
-		heart = Utilities.loadImage("heart.png"); // instatiate heart image
+		heart = Utilities.loadImage("heart.png"); // instantiate heart image
+
+		done = false;
 	}
-	
-	/*returns orbitals[] so other classes can access it
-	 * but it remains private
-	*/
-	public Orbital[] getOrbitals() 
+
+	// these methods all return fields from this class so the can be private
+	public Orbital[] getOrbitals()
 	{
 		return orbitals;
 	}
-	
 
-	/*checks if afbau principle has been violated
-	* (e- in higher energy orbital when empty one is available)
-	*/
+	public int geteAdded()
+	{
+		return eAdded;
+	}
+
+	public void seteAdded(int eAdded)
+	{
+		this.eAdded = eAdded;
+	}
+
+	public boolean getDone()
+	{
+		return done;
+	}
+
+	/*
+	 * checks if afbau principle has been violated (e- in higher energy orbital
+	 * when empty one is available)
+	 */
 	public void checkAfbau(int whereEPlaced)
 	{
 
-		int eLastMoved = -1; // index of electrons[] that was last moved
+		int eLastMoved = findLastMoved(); // index of electrons[] that was last
+											// moved
 
-		for (int i = 0; i < 36; i++) // go through each electron[] index to find
-						// last moved
-		{
-			if (electrons[i].getLastMoved())
-			{
-				eLastMoved = i;
-			}
-		}
-
+		// starting from where e- was placed and going down
 		for (int i = whereEPlaced - 1; i >= 0; i--)
 		{
+			// if the orbital has an empty space
 			if (!orbitals[i].getOccupied()[0] || !orbitals[i].getOccupied()[1])
 			{
-				errors[1] = true;
-				lives--;
-				repaint();
-				return;
+				// if the orbital has a different name (principle energy and sub
+				// level)
+				if (!orbitals[i].getName().equals(orbitals[whereEPlaced].getName()))
+				{
+					// error
+					errors[1] = true;
+					lives--;
+					repaint();
+				}
 			}
 		}
 
 	}
-	
-	/* checks if puli’s exclusion principle has been violated
-	 * (same spin in orbital)
-	 */	
-	public void checkPauli(int whereEPlaced) 
+
+	/*
+	 * checks if puli’s exclusion principle has been violated (same spin in
+	 * orbital)
+	 */
+	public void checkPauli(int whereEPlaced)
 	{
-		int eLastMoved = -1; // index of electrons[] that was last moved
-
-		for (int i = 0; i < 36; i++) // go through each electron[] index to find
-										// last moved
+		int eLastMoved = findLastMoved(); // index of electrons[] that was last
+											// moved
+		// if both e- not null
+		if ((orbitals[whereEPlaced].getOrbitalE()[0] != null) && (orbitals[whereEPlaced].getOrbitalE()[1] != null))
 		{
-			if (electrons[i].getLastMoved())
+			// if they are same spin
+			if (orbitals[whereEPlaced].getOrbitalE()[0].getSpin() == orbitals[whereEPlaced].getOrbitalE()[1].getSpin())
 			{
-				eLastMoved = i;
-			}
-		}
-
-		if ((orbitals[whereEPlaced].getOrbitalE()[0] != null) && (orbitals[whereEPlaced].getOrbitalE()[1] != null)) // if both e- not null				
-		{
-			if (orbitals[whereEPlaced].getOrbitalE()[0].getSpin() == orbitals[whereEPlaced].getOrbitalE()[1].getSpin()) // if they are same spin lose life and repaint
-																									{
 				errors[0] = true;
 				lives--;
 				repaint();
 			}
 		}
 
-		electrons[eLastMoved].setLastMoved(false); // set lastMoved to false for next e- to be moved
+		electrons[eLastMoved].setLastMoved(false); // set lastMoved to false for
+													// next e- to be moved
 	}
 
-	/*checks if hund’s rule has been violated
-	 *(electrons double up in orbitals when empty orbitals of same energy are available
-	* (not finished yet)
-	*/
+	/*
+	 * checks if hund’s rule has been violated (electrons double up in orbitals
+	 * when empty orbitals of same energy are available
+	 */
 	public void checkHund(int whereEPlaced)
 	{
-		int eLastMoved = -1; // index of electrons[] that was last moved
-
-		for (int i = 0; i < 36; i++) // go through each electron[] index to find last moved
+		boolean errorMade = false;
+		// for loop to check all p sublevels b/c they have multiple orbitals
+		for (int i = 2; i < 7; i += 4)
 		{
-			if (electrons[i].getLastMoved())
+			// if an e- was placed in one of the d orbitals
+			if ((whereEPlaced == i) || (whereEPlaced == (i + 1)) || (whereEPlaced == (i + 2)))
 			{
-				eLastMoved = i;
-			}
-		}
-
-		if ((whereEPlaced == 2) || (whereEPlaced == 3) || (whereEPlaced == 4))
-		{
-			// if in sublevel d of principle energy level 2 one of the orbitals
-			// has 2 e- when one has none
-			if ((orbitals[2].getNumE() == 2) && ((orbitals[3].getNumE() == 0) || (orbitals[4].getNumE() == 0)))
-			{
-				lives--;
-				repaint();
-				errors[2] = true;
-				return;
-			}
-
-			if ((orbitals[4].getNumE() == 2) && ((orbitals[2].getNumE() == 0) || (orbitals[3].getNumE() == 0)))
-			{
-				lives--;
-				repaint();
-				errors[2] = true;
-				return;
-			}
-
-			if ((orbitals[3].getNumE() == 2) && ((orbitals[4].getNumE() == 0) || (orbitals[2].getNumE() == 0)))
-			{
-				lives--;
-				repaint();
-				errors[2] = true;
-				return;
-			}
-
-			if (orbitals[2].getOrbitalE()[0] != null)
-			{
-				if (orbitals[3].getOrbitalE()[0] != null)
+				// if placed in 1st orbital of p sublevel
+				if (whereEPlaced == i)
 				{
-					if (orbitals[4].getOrbitalE()[0] != null)
+					// if 2 e- in this orbital and none in other of same
+					// sublevel
+					if ((orbitals[i].getNumE() == 2)
+							&& ((orbitals[i + 1].getNumE() == 0) || (orbitals[i + 2].getNumE() == 0)))
 					{
-						if ((orbitals[2].getOrbitalE()[0].getSpin() != orbitals[3].getOrbitalE()[0].getSpin())
-								|| (orbitals[3].getOrbitalE()[0].getSpin() != orbitals[4].getOrbitalE()[0].getSpin())
-								|| (orbitals[2].getOrbitalE()[0].getSpin() != orbitals[4].getOrbitalE()[0].getSpin()))
+						errorMade = true;
+					}
+
+					// if this orbital and one other has 1 e-
+					else if ((orbitals[i].getNumE() == 1) && ((orbitals[i + 1].getNumE() == 1)))
+					{
+						if (orbitals[i].getOrbitalE()[0].getSpin() != orbitals[i + 1].getOrbitalE()[0].getSpin())
 						{
-							lives--;
-							repaint();
-							errors[2] = true;
-							return;
+							errorMade = true;
+						}
+					}
+
+					// if this orbital and one other has 1 e-
+					else if ((orbitals[i].getNumE() == 1) && ((orbitals[i + 2].getNumE() == 1)))
+					{
+						// if different spins
+						if (orbitals[i].getOrbitalE()[0].getSpin() != orbitals[i + 2].getOrbitalE()[0].getSpin())
+						{
+							errorMade = true;
 						}
 					}
 				}
+
+				// if placed in 2nd orbital of p sublevel
+				else if (whereEPlaced == (i + 1))
+				{
+					// if 2 e- in this orbital and none in other of same
+					// sublevel
+					if ((orbitals[i + 1].getNumE() == 2)
+							&& ((orbitals[i].getNumE() == 0) || (orbitals[i + 2].getNumE() == 0)))
+					{
+						errorMade = true;
+					}
+
+					// if this orbital and one other has 1 e-
+					else if ((orbitals[i + 1].getNumE() == 1) && ((orbitals[i].getNumE() == 1)))
+					{
+						if (orbitals[i + 1].getOrbitalE()[0].getSpin() != orbitals[i].getOrbitalE()[0].getSpin())
+						{
+							errorMade = true;
+						}
+					}
+
+					// if this orbital and one other has 1 e-
+					else if ((orbitals[i + 1].getNumE() == 1) && ((orbitals[i + 2].getNumE() == 1)))
+					{
+						// if different spins
+						if (orbitals[i + 1].getOrbitalE()[0].getSpin() != orbitals[i + 2].getOrbitalE()[0].getSpin())
+						{
+							errorMade = true;
+						}
+					}
+				}
+
+				// if placed in 3rd orbital of p sublevel
+				else if (whereEPlaced == (i + 2))
+				{
+					System.out.println("wherePlaced = 4");
+					// if 2 e- in this orbital and none in other of same
+					// sublevel
+					if ((orbitals[i + 2].getNumE() == 2)
+							&& ((orbitals[i].getNumE() == 0) || (orbitals[i + 1].getNumE() == 0)))
+					{
+						errorMade = true;
+					}
+
+					// if this orbital and one other has 1 e-
+					else if ((orbitals[i + 2].getNumE() == 1) && ((orbitals[i].getNumE() == 1)))
+					{
+						if (orbitals[i + 2].getOrbitalE()[0].getSpin() != orbitals[i].getOrbitalE()[0].getSpin())
+						{
+							errorMade = true;
+						}
+					}
+
+					// if this orbital and one other has 1 e-
+					else if ((orbitals[i + 2].getNumE() == 1) && ((orbitals[i + 1].getNumE() == 1)))
+					{
+						// if different spins
+						if (orbitals[i + 2].getOrbitalE()[0].getSpin() != orbitals[i + 1].getOrbitalE()[0].getSpin())
+						{
+							errorMade = true;
+						}
+					}
+
+				}
 			}
+		}
+
+		if (errorMade)
+		{
+			lives--;
+			errors[2] = true;
+			repaint();
 		}
 	}
 
-	public void actionPerformed(ActionEvent e)
+	public int findLastMoved()
 	{
+		for (int i = 0; i < 36; i++) // go through each electron[] index to find
+		// last moved
+		{
+			if (electrons[i].getLastMoved())
+			{
+				return i;
+			}
+		}
+
+		return -1;
 	}
 
+	public void checkIfLost()
+	{
+		if (done || (lives == 0))
+		{
+			done = true;
+			new ErrorPanel(errors, lives);
+		}
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e)
+	{
+		done = true;
+		checkIfLost();
+	}
+
+	@Override
 	public void paintComponent(Graphics g)
 	{
 		setBackground(Color.BLACK);
 		super.paintComponent(g);
-		
 
-		//draw arcs for energy levels
+		// draw arcs for energy levels
 		g.setColor(Color.CYAN);
 		g.fillOval(30, -330, 760, 575);
 		g.setColor(Color.BLACK);
@@ -281,30 +375,12 @@ public class GamePanel extends JPanel implements ActionListener
 		g.fillOval(170, -370, 460, 480);
 		g.setColor(Color.BLACK);
 		g.fillOval(175, -370, 450, 470);
-		
 
-		//draw hearts for lives
+		// draw hearts for lives
 		for (int i = 0; i < lives; i++)
 		{
 			g.drawImage(heart, 750, 0 + (55 * i), 800, 50 + (55 * i), 0, 0, heart.getWidth(this), heart.getHeight(this),
 					this);
 		}
 	}
-
-	/**
-	 * @return the eAdded
-	 */
-	public int geteAdded()
-	{
-		return eAdded;
-	}
-
-	/**
-	 * @param eAdded the eAdded to set
-	 */
-	public void seteAdded(int eAdded)
-	{
-		this.eAdded = eAdded;
-	}
-
 }
