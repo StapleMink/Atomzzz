@@ -25,17 +25,22 @@ public class GamePanel extends JPanel implements ActionListener
 	private int lives;
 	private final int level;
 	private int eAdded;
-	private final int eNeeded;
-	private final boolean passed, selected;
+	private int eNeeded;
+	private boolean passed;
 	private final boolean[] errors;
 	private Image nucleus;
 	private final Image heart;
+	private final Image symbol;
 	private boolean done;
+	private boolean pressed;
+	private final MainPanel main;
 
-	public GamePanel(MainPanel mp)
+	public GamePanel(MainPanel mp, int levelIn)
 	{
 		setLayout(null); // set layout and size
 		setSize(800, 450);
+
+		main = mp;
 
 		orbitals = new Orbital[18]; // instantiate orbitals[]
 		orbitals[0] = new Orbital("1s", this);
@@ -45,16 +50,21 @@ public class GamePanel extends JPanel implements ActionListener
 		{
 			orbitals[i] = new Orbital("2p", this);
 		}
+
 		orbitals[5] = new Orbital("3s", this);
+
 		for (int i = 6; i < 9; i++)
 		{
 			orbitals[i] = new Orbital("3p", this);
 		}
+
 		orbitals[9] = new Orbital("4s", this);
+
 		for (int i = 10; i < 15; i++)
 		{
 			orbitals[i] = new Orbital("3d", this);
 		}
+
 		for (int i = 15; i < 18; i++)
 		{
 			orbitals[i] = new Orbital("4p", this);
@@ -105,14 +115,45 @@ public class GamePanel extends JPanel implements ActionListener
 		}
 
 		lives = 3;
-		level = 1;
-		seteAdded(0);
-		eNeeded = (int) ((Math.random() * 3) + 3); // Math.random() to generate
-													// number of electrons
-													// between 3 and 5
-		// (Lithium and Boron)
+		level = levelIn;
+		eAdded = 0;
+		if (level == 1)
+		{
+			eNeeded = (int) ((Math.random() * 2) + 3);
+		}
+
+		if (level == 2)
+		{
+			eNeeded = 10;
+		}
+
+		if (level == 3)
+		{
+			eNeeded = (int) ((Math.random() * 4) + 6);
+		}
+
+		if (level == 4)
+		{
+			eNeeded = (int) ((Math.random() * 7) + 11);
+		}
+
+		if (level == 5)
+		{
+			double random = Math.random();
+			if (random < 0.5)
+			{
+				eNeeded = (int) ((Math.random() * 3) + 26);
+			}
+
+			else
+			{
+				eNeeded = (int) ((Math.random() * 3) + 33);
+			}
+		}
+
+		symbol = Utilities.loadImage("element" + Integer.toString(eNeeded) + ".jpg");
+
 		passed = false;
-		selected = false;
 
 		errors = new boolean[5]; // instantiate errors to all false
 		for (int i = 0; i < errors.length; i++)
@@ -129,6 +170,7 @@ public class GamePanel extends JPanel implements ActionListener
 		heart = Utilities.loadImage("heart.png"); // instantiate heart image
 
 		done = false;
+		pressed = false;
 	}
 
 	// these methods all return fields from this class so the can be private
@@ -176,6 +218,7 @@ public class GamePanel extends JPanel implements ActionListener
 					errors[1] = true;
 					lives--;
 					repaint();
+					return;
 				}
 			}
 		}
@@ -183,7 +226,7 @@ public class GamePanel extends JPanel implements ActionListener
 	}
 
 	/*
-	 * checks if puli’s exclusion principle has been violated (same spin in
+	 * checks if pauli's exclusion principle has been violated (same spin in
 	 * orbital)
 	 */
 	public void checkPauli(int whereEPlaced)
@@ -198,7 +241,6 @@ public class GamePanel extends JPanel implements ActionListener
 			{
 				errors[0] = true;
 				lives--;
-				repaint();
 			}
 		}
 
@@ -207,120 +249,105 @@ public class GamePanel extends JPanel implements ActionListener
 	}
 
 	/*
-	 * checks if hund’s rule has been violated (electrons double up in orbitals
+	 * checks if hund's rule has been violated (electrons double up in orbitals
 	 * when empty orbitals of same energy are available
 	 */
 	public void checkHund(int whereEPlaced)
 	{
-		boolean errorMade = false;
-		// for loop to check all p sublevels b/c they have multiple orbitals
-		for (int i = 2; i < 7; i += 4)
+		// if action was in sublevel w/ multiple orbitals
+		if ((orbitals[whereEPlaced].getSubLevel() == 'p') || (orbitals[whereEPlaced].getSubLevel() == 'd')
+				|| (orbitals[whereEPlaced].getSubLevel() == 'f'))
 		{
-			// if an e- was placed in one of the d orbitals
-			if ((whereEPlaced == i) || (whereEPlaced == (i + 1)) || (whereEPlaced == (i + 2)))
+
+			// this new orbital will represent the orbital where the e- was
+			// placed
+			Orbital located = orbitals[whereEPlaced];
+			// this new orbital will represent the other e- of that sublevel
+			Orbital[] others = new Orbital[7];
+
+			// to instantiate others[]
+			int index = 0;
+			for (int i = 0; i < 18; i++)
 			{
-				// if placed in 1st orbital of p sublevel
-				if (whereEPlaced == i)
+				// making sure it's not the one that's where the e- was placed
+				// and is correct level
+				if ((orbitals[i].getName().equals(orbitals[whereEPlaced].getName())) && (i != whereEPlaced))
 				{
-					// if 2 e- in this orbital and none in other of same
-					// sublevel
-					if ((orbitals[i].getNumE() == 2)
-							&& ((orbitals[i + 1].getNumE() == 0) || (orbitals[i + 2].getNumE() == 0)))
-					{
-						errorMade = true;
-					}
-
-					// if this orbital and one other has 1 e-
-					else if ((orbitals[i].getNumE() == 1) && ((orbitals[i + 1].getNumE() == 1)))
-					{
-						if (orbitals[i].getOrbitalE()[0].getSpin() != orbitals[i + 1].getOrbitalE()[0].getSpin())
-						{
-							errorMade = true;
-						}
-					}
-
-					// if this orbital and one other has 1 e-
-					else if ((orbitals[i].getNumE() == 1) && ((orbitals[i + 2].getNumE() == 1)))
-					{
-						// if different spins
-						if (orbitals[i].getOrbitalE()[0].getSpin() != orbitals[i + 2].getOrbitalE()[0].getSpin())
-						{
-							errorMade = true;
-						}
-					}
+					others[index] = orbitals[i];
+					index++;
 				}
+			}
 
-				// if placed in 2nd orbital of p sublevel
-				else if (whereEPlaced == (i + 1))
+			// this is the number of other orbitals in that sublevel
+			int numOthers = 0;
+
+			while (others[numOthers] != null)
+			{
+				System.out.println(numOthers);
+				numOthers++;
+			}
+
+			// goes through the others[] to find errors
+			for (int i = 0; i < numOthers; i++)
+			{
+				// if the orbital where placed has 2e- and another has 0
+				if ((located.getNumE() == 2) && (others[i].getNumE() == 0))
 				{
-					// if 2 e- in this orbital and none in other of same
-					// sublevel
-					if ((orbitals[i + 1].getNumE() == 2)
-							&& ((orbitals[i].getNumE() == 0) || (orbitals[i + 2].getNumE() == 0)))
-					{
-						errorMade = true;
-					}
-
-					// if this orbital and one other has 1 e-
-					else if ((orbitals[i + 1].getNumE() == 1) && ((orbitals[i].getNumE() == 1)))
-					{
-						if (orbitals[i + 1].getOrbitalE()[0].getSpin() != orbitals[i].getOrbitalE()[0].getSpin())
-						{
-							errorMade = true;
-						}
-					}
-
-					// if this orbital and one other has 1 e-
-					else if ((orbitals[i + 1].getNumE() == 1) && ((orbitals[i + 2].getNumE() == 1)))
-					{
-						// if different spins
-						if (orbitals[i + 1].getOrbitalE()[0].getSpin() != orbitals[i + 2].getOrbitalE()[0].getSpin())
-						{
-							errorMade = true;
-						}
-					}
+					errors[2] = true;
+					lives--;
+					return;
 				}
-
-				// if placed in 3rd orbital of p sublevel
-				else if (whereEPlaced == (i + 2))
-				{
-					System.out.println("wherePlaced = 4");
-					// if 2 e- in this orbital and none in other of same
-					// sublevel
-					if ((orbitals[i + 2].getNumE() == 2)
-							&& ((orbitals[i].getNumE() == 0) || (orbitals[i + 1].getNumE() == 0)))
+				// if both have one
+				if ((located.getNumE() == 1) && (others[i].getNumE() == 1))
+				{ // if different spins
+					if (located.getOrbitalE()[0].getSpin() != others[i].getOrbitalE()[0].getSpin())
 					{
-						errorMade = true;
+						errors[2] = true;
+						lives--;
+						return;
 					}
-
-					// if this orbital and one other has 1 e-
-					else if ((orbitals[i + 2].getNumE() == 1) && ((orbitals[i].getNumE() == 1)))
-					{
-						if (orbitals[i + 2].getOrbitalE()[0].getSpin() != orbitals[i].getOrbitalE()[0].getSpin())
-						{
-							errorMade = true;
-						}
-					}
-
-					// if this orbital and one other has 1 e-
-					else if ((orbitals[i + 2].getNumE() == 1) && ((orbitals[i + 1].getNumE() == 1)))
-					{
-						// if different spins
-						if (orbitals[i + 2].getOrbitalE()[0].getSpin() != orbitals[i + 1].getOrbitalE()[0].getSpin())
-						{
-							errorMade = true;
-						}
-					}
-
 				}
 			}
 		}
+	}
 
-		if (errorMade)
+	public void checkNumE()
+	{
+		if (eNeeded != eAdded)
 		{
-			lives--;
-			errors[2] = true;
-			repaint();
+			if (eAdded < eNeeded)
+			{
+				errors[4] = true;
+				lives = 0;
+				repaint();
+				return;
+			}
+
+			if (eAdded > eNeeded)
+			{
+				errors[3] = true;
+				lives = 0;
+				repaint();
+				return;
+			}
+		}
+	}
+
+	public void checkPassed()
+	{
+		if ((lives > 0) && done)
+		{
+			passed = true;
+		}
+		else if (lives <= 0)
+		{
+			passed = false;
+			done = true;
+		}
+		if (pressed || (lives <= 0))
+		{
+			main.add(new ErrorPanel(errors, lives, passed, main, level, this), "errors");
+			main.getCards().show(main, "errors");
 		}
 	}
 
@@ -338,20 +365,13 @@ public class GamePanel extends JPanel implements ActionListener
 		return -1;
 	}
 
-	public void checkIfLost()
-	{
-		if (done || (lives == 0))
-		{
-			done = true;
-			new ErrorPanel(errors, lives);
-		}
-	}
-
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
+		pressed = true;
 		done = true;
-		checkIfLost();
+		checkNumE();
+		checkPassed();
 	}
 
 	@Override
@@ -375,6 +395,8 @@ public class GamePanel extends JPanel implements ActionListener
 		g.fillOval(170, -370, 460, 480);
 		g.setColor(Color.BLACK);
 		g.fillOval(175, -370, 450, 470);
+
+		g.drawImage(symbol, 0, 0, 50, 50, 0, 0, symbol.getWidth(this), symbol.getHeight(this), this);
 
 		// draw hearts for lives
 		for (int i = 0; i < lives; i++)
