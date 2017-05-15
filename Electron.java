@@ -212,14 +212,15 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 				}
 
 				game.getOrbitals()[index].incrementNumE();
-				System.out.println(index + ": " + game.getOrbitals()[index].getNumE());
 				game.seteAdded(game.geteAdded() + 1);
 				game.checkAfbau(wherePlaced);
 				game.checkPauli(wherePlaced);
 				game.checkHund(wherePlaced);
+				game.repaint();
+				game.checkPassed();
 			}
 			selected = false;
-			game.checkIfLost();
+			// game.checkIfLost();
 		}
 	}
 
