@@ -32,7 +32,7 @@ public class Orbital extends JPanel
 		principleLevel = Integer.parseInt(name.substring(0, 1));
 		subLevel = name.charAt(1);
 		numE = 0;
-		setSize(80, 40);
+		setSize(120, 60);
 	}
 
 	// these methods all return field variables so they can be private
@@ -81,21 +81,20 @@ public class Orbital extends JPanel
 		if (subLevel == 's')
 		{
 			g.setColor(Color.GREEN);
-			g.fillOval(0, 0, 80, 40);
 		}
-		if (subLevel == 'p')
+		else if (subLevel == 'p')
 		{
 			g.setColor(Color.BLUE);
-			g.fillOval(0, 0, 80, 40);
 		}
-		if (subLevel == 'd')
+		else if (subLevel == 'd')
 		{
 			g.setColor(Color.RED);
-			g.fillOval(0, 0, 80, 40);
 		}
 
+		g.fillOval(0, 0, 120, 60);
+
 		g.setColor(Color.BLACK);
-		g.drawLine(40, 5, 40, 35);
+		g.drawLine(60, 5, 60, 55);
 
 	}
 

@@ -1,10 +1,10 @@
+
 /* Gaurav Datta
  * 4/25/17
  * Utilities.java
- * This class contains 3 static methods to do the following
+ * This class contains 2 static methods to do the following
  * 	-Load an image given the name of the file and return it using try-catch
  * 	-Load a text file and instantiate and return a scanner for it using try-catch
- * 	-Return the correct size of a component given a factor and another dimension to scale it
  */
 
 import java.awt.Image;
@@ -54,14 +54,5 @@ public class Utilities
 		}
 
 		return scan;
-	}
-
-	public static int scale(double factor, int dimension) // returns an integer
-															// scaled to the
-															// correct factor
-	{
-
-		return (int) (dimension * factor);
-
 	}
 }

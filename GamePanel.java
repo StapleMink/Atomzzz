@@ -19,30 +19,33 @@ import javax.swing.JPanel;
 
 public class GamePanel extends JPanel implements ActionListener
 {
-	private final Orbital[] orbitals;
-	private final Electron[] electrons;
-	private final JButton complete;
+	private Orbital[] orbitals;
+	private Electron[] electrons;
+	private JButton complete;
 	private int lives;
 	private final int level;
 	private int eAdded;
 	private int eNeeded;
 	private boolean passed;
-	private final boolean[] errors;
+	private boolean[] errors;
 	private Image nucleus;
-	private final Image heart;
-	private final Image symbol;
+	private Image heart;
+	private Image symbol;
 	private boolean done;
 	private boolean pressed;
-	private final MainPanel main;
+	private MainPanel main;
 
 	public GamePanel(MainPanel mp, int levelIn)
 	{
 		setLayout(null); // set layout and size
-		setSize(800, 450);
+		setSize(1600, 900);
 
 		main = mp;
 
-		orbitals = new Orbital[18]; // instantiate orbitals[]
+		orbitals = new Orbital[23]; // instantiate orbitals[]
+		orbitals[0] = new Orbital("1s", this);
+		orbitals[1] = new Orbital("2s", this); // each orbital gets this
+		// instance of GamePanel
 		orbitals[0] = new Orbital("1s", this);
 		orbitals[1] = new Orbital("2s", this); // each orbital gets this
 		// instance of GamePanel
@@ -70,31 +73,44 @@ public class GamePanel extends JPanel implements ActionListener
 			orbitals[i] = new Orbital("4p", this);
 		}
 
-		orbitals[0].setLocation(360, 50); // set location of orbitals
-		orbitals[1].setLocation(175, 90);
-
-		for (int i = 2; i < 4; i++)
+		for (int i = 18; i < 23; i++)
 		{
-			orbitals[i].setLocation(96 + ((i - 1) * 176), 130);
+			orbitals[i] = new Orbital("4d", this);
 		}
-		orbitals[4].setLocation(545, 90);
 
-		/*
-		 * for (int i = 0; i < 4; i++) { orbitals[i + 1].setLocation(96 + (i *
-		 * 176), 130); orbitals[i + 5].setLocation(96 + (i * 176), 200); }
-		 */
+		orbitals[0].setLocation(760, 110);
 
-		for (int i = 0; i < 9; i++)
-		{
-			orbitals[i + 9].setLocation(8 + (88 * i), 270);
-		}
+		orbitals[1].setLocation(455, 70);
+		orbitals[2].setLocation(630, 220);
+		orbitals[3].setLocation(890, 220);
+		orbitals[4].setLocation(1065, 70);// 2p
+
+		orbitals[5].setLocation(320, 30);// 3s
+		orbitals[10].setLocation(360, 140);// 3d
+		orbitals[11].setLocation(445, 250);// 3d
+		orbitals[12].setLocation(575, 330);// 3d
+		orbitals[13].setLocation(760, 375);// 3d
+		orbitals[14].setLocation(955, 330);// 3d
+		orbitals[6].setLocation(1080, 250);// 3p
+		orbitals[7].setLocation(1160, 140);// 3p
+		orbitals[8].setLocation(1200, 30);// 3p
+
+		orbitals[9].setLocation(180, 30);// 4s
+		orbitals[18].setLocation(240, 190);// 4d
+		orbitals[19].setLocation(365, 340);// 4d
+		orbitals[20].setLocation(560, 460);// 4d
+		orbitals[21].setLocation(760, 500);// 4d
+		orbitals[22].setLocation(980, 460);// 4d
+		orbitals[15].setLocation(1175, 340);// 4p
+		orbitals[16].setLocation(1300, 190);// 4p
+		orbitals[17].setLocation(1350, 30);// 4p
 
 		electrons = new Electron[36]; // instantiate electrons[] w/ instance of
 		// GamePanel and spin
 		for (int i = 0; i < 18; i++) // then set location
 		{
 			electrons[i] = new Electron(true, this);
-			electrons[i].setLocation(13 + (43 * i), 330);
+			electrons[i].setLocation(35 + (86 * i), 720);
 			electrons[i].setOrigX(electrons[i].getX());
 			electrons[i].setOrigY(electrons[i].getY());
 			add(electrons[i]); // add
@@ -103,13 +119,13 @@ public class GamePanel extends JPanel implements ActionListener
 		for (int i = 0; i < 18; i++)
 		{
 			electrons[i + 18] = new Electron(false, this);
-			electrons[i + 18].setLocation(13 + (43 * i), 390);
+			electrons[i + 18].setLocation(35 + (86 * i), 790);// Modif
 			electrons[i + 18].setOrigX(electrons[i + 18].getX());
 			electrons[i + 18].setOrigY(electrons[i + 18].getY());
 			add(electrons[i + 18]); // add
 		}
 
-		for (int i = 0; i < 18; i++)
+		for (int i = 0; i < 23; i++)
 		{
 			add(orbitals[i]); // add orbitals
 		}
@@ -153,6 +169,8 @@ public class GamePanel extends JPanel implements ActionListener
 
 		symbol = Utilities.loadImage("element" + Integer.toString(eNeeded) + ".jpg");
 
+		nucleus = Utilities.loadImage("nucleus.png");
+
 		passed = false;
 
 		errors = new boolean[5]; // instantiate errors to all false
@@ -163,8 +181,8 @@ public class GamePanel extends JPanel implements ActionListener
 
 		complete = new JButton("Complete"); // instantiate button for completion
 		complete.addActionListener(this);
-		complete.setLocation(690, 200);
-		complete.setSize(100, 30);
+		complete.setLocation(1350, 550);
+		complete.setSize(200, 60);
 		add(complete);
 
 		heart = Utilities.loadImage("heart.png"); // instantiate heart image
@@ -255,8 +273,7 @@ public class GamePanel extends JPanel implements ActionListener
 	public void checkHund(int whereEPlaced)
 	{
 		// if action was in sublevel w/ multiple orbitals
-		if ((orbitals[whereEPlaced].getSubLevel() == 'p') || (orbitals[whereEPlaced].getSubLevel() == 'd')
-				|| (orbitals[whereEPlaced].getSubLevel() == 'f'))
+		if ((orbitals[whereEPlaced].getSubLevel() == 'p') || (orbitals[whereEPlaced].getSubLevel() == 'd'))
 		{
 
 			// this new orbital will represent the orbital where the e- was
@@ -311,6 +328,7 @@ public class GamePanel extends JPanel implements ActionListener
 		}
 	}
 
+	// checks if right num of electrons were placed when complete is pressed
 	public void checkNumE()
 	{
 		if (eNeeded != eAdded)
@@ -333,6 +351,7 @@ public class GamePanel extends JPanel implements ActionListener
 		}
 	}
 
+	// checks if enough lives remain that the user passed the level
 	public void checkPassed()
 	{
 		if ((lives > 0) && done)
@@ -351,6 +370,7 @@ public class GamePanel extends JPanel implements ActionListener
 		}
 	}
 
+	// returns the index of the last moved electron in electrons[]
 	public int findLastMoved()
 	{
 		for (int i = 0; i < 36; i++) // go through each electron[] index to find
@@ -365,6 +385,7 @@ public class GamePanel extends JPanel implements ActionListener
 		return -1;
 	}
 
+	// when complete is pressed
 	@Override
 	public void actionPerformed(ActionEvent e)
 	{
@@ -374,6 +395,7 @@ public class GamePanel extends JPanel implements ActionListener
 		checkPassed();
 	}
 
+	// UI drawing, including images
 	@Override
 	public void paintComponent(Graphics g)
 	{
@@ -382,27 +404,20 @@ public class GamePanel extends JPanel implements ActionListener
 
 		// draw arcs for energy levels
 		g.setColor(Color.CYAN);
-		g.fillOval(30, -330, 760, 575);
-		g.setColor(Color.BLACK);
-		g.fillOval(35, -330, 750, 565);
+		g.fillRect(0, 675, 1600, 10);
+		g.drawOval(600, -305, 450, 450);
+		g.drawOval(475, -425, 700, 700);
+		g.drawOval(360, -515, 925, 925);
+		g.drawOval(225, -675, 1200, 1200);
 
-		g.setColor(Color.CYAN);
-		g.fillOval(100, -400, 600, 575);
-		g.setColor(Color.BLACK);
-		g.fillOval(105, -400, 590, 565);
-
-		g.setColor(Color.CYAN);
-		g.fillOval(170, -370, 460, 480);
-		g.setColor(Color.BLACK);
-		g.fillOval(175, -370, 450, 470);
-
-		g.drawImage(symbol, 0, 0, 50, 50, 0, 0, symbol.getWidth(this), symbol.getHeight(this), this);
+		g.drawImage(symbol, 25, 25, 120, 150, this);
+		g.drawImage(nucleus, 775, -50, 100, 100, this);
 
 		// draw hearts for lives
 		for (int i = 0; i < lives; i++)
 		{
-			g.drawImage(heart, 750, 0 + (55 * i), 800, 50 + (55 * i), 0, 0, heart.getWidth(this), heart.getHeight(this),
-					this);
+			g.drawImage(heart, 1525, 5 + (70 * i), 65, 65, this);
 		}
+
 	}
 }

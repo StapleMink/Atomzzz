@@ -34,7 +34,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	public Electron(boolean spinIn, GamePanel gp)
 	{
 		setLayout(null);
-		setSize(30, 30);
+		setSize(45, 45);
 		spin = spinIn;
 		inOrbital = false;
 		selected = false;
@@ -99,26 +99,18 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	public void paintComponent(Graphics g)
 	{
 		g.setColor(Color.YELLOW);
-		g.fillOval(0, 0, 30, 30);
+		g.fillOval(0, 0, 45, 45);
 		g.setColor(Color.BLACK);
 
-		g.drawLine(15, 5, 15, 25);
+		g.drawLine(23, 5, 23, 40);
 
 		if (spin)
 		{
-			g.drawLine(15, 5, 22, 12);
+			g.drawLine(23, 5, 35, 20);
 		}
 		else
 		{
-			g.drawLine(15, 25, 8, 18);
-			/*
-			 * g.drawLine(Utilities.scale(0.5, getWidth()),
-			 * Utilities.scale(0.125, getHeight()), Utilities.scale(0.5,
-			 * getWidth()), Utilities.scale(0.875, getHeight()));
-			 * g.drawLine(Utilities.scale(0.5, getWidth()),
-			 * Utilities.scale(0.125, getHeight()), Utilities.scale(0.75,
-			 * getWidth()), Utilities.scale(0.25, getHeight()));
-			 */
+			g.drawLine(23, 40, 11, 25);
 		}
 	}
 
@@ -171,7 +163,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 			inOrbital = false;
 
 			// checks each orbital to see if inside
-			for (index = 0; (index < 18) && !inOrbital; index++)
+			for (index = 0; (index < 23) && !inOrbital; index++)
 			{
 				inOrbital = isInOrbital(index);
 			}
@@ -186,18 +178,18 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 			{
 				index--;
 				wherePlaced = index; // field that can be accessed later
-				System.out.println(wherePlaced);
 				// places electron in right or left side, tells orbital it has
 				// occupant and instantiates an electron there with same spin
+
 				if (side.equals("left"))
 				{
-					setLocation(game.getOrbitals()[index].getX() + 5, game.getOrbitals()[index].getY() + 5);
+					setLocation(game.getOrbitals()[index].getX() + 8, game.getOrbitals()[index].getY() + 8);
 					game.getOrbitals()[index].getOccupied()[0] = true;
 				}
 
 				else if (side.equals("right"))
 				{
-					setLocation(game.getOrbitals()[index].getX() + 45, game.getOrbitals()[index].getY() + 5);
+					setLocation(game.getOrbitals()[index].getX() + 65, game.getOrbitals()[index].getY() + 8);
 					game.getOrbitals()[index].getOccupied()[1] = true;
 				}
 
@@ -241,8 +233,8 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	public boolean isInOrbital(int index)
 	{
 		// data on orbital in question
-		int centerX = getX() + 15;
-		int centerY = getY() + 15;
+		int centerX = getX() + 23;
+		int centerY = getY() + 23;
 		int orbitalX = game.getOrbitals()[index].getX();
 		int orbitalY = game.getOrbitals()[index].getY();
 		int orbitalWidth = game.getOrbitals()[index].getWidth();

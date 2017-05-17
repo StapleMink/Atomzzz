@@ -9,21 +9,19 @@
  */
 
 import java.awt.CardLayout;
+import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
 public class MainPanel extends JPanel
 {
 
+	// fields
 	private final CardLayout cards;
 	private final StartPanel sp;
-	private final GamePanel gp1;
-	private final GamePanel gp2;
-	private final GamePanel gp3;
-	private final GamePanel gp4;
-	private final GamePanel gp5;
 	private GamePanel gp;
 
+	// initialize fields, giving this instance of MainPanel
 	public MainPanel()
 	{
 		cards = new CardLayout();
@@ -31,21 +29,6 @@ public class MainPanel extends JPanel
 
 		sp = new StartPanel(this);
 		add(sp, "start");
-
-		gp1 = new GamePanel(this, 1);
-		add(gp1, "game1");
-
-		gp2 = new GamePanel(this, 2);
-		add(gp2, "game2");
-
-		gp3 = new GamePanel(this, 3);
-		add(gp3, "game3");
-
-		gp4 = new GamePanel(this, 4);
-		add(gp4, "game4");
-
-		gp5 = new GamePanel(this, 5);
-		add(gp5, "game5");
 
 		gp = new GamePanel(this, 1);
 		add(gp, "game");
@@ -58,9 +41,16 @@ public class MainPanel extends JPanel
 		return cards;
 	}
 
+	// resets gp to new level after user elects to try again or advance
 	public void setGame(int whichLevel)
 	{
 		gp = new GamePanel(this, whichLevel);
+	}
+
+	@Override
+	public void paintComponent(Graphics g)
+	{
+
 	}
 
 }

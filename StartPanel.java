@@ -1,16 +1,12 @@
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.FlowLayout;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.WindowConstants;
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<BEGIN CODE FOR STARTPANEL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 public class StartPanel extends JPanel
@@ -25,12 +21,12 @@ public class StartPanel extends JPanel
 		setLayout(null);
 		titleP = new TitlePanel();
 		add(titleP, BorderLayout.NORTH);
-		titleP.setSize(800, 100);
+		titleP.setSize(1600, 200);
 		titleP.setLocation(0, 0);
 		menuP = new MenuPanel();
 		add(menuP, BorderLayout.CENTER);
-		menuP.setSize(800, 350);
-		menuP.setLocation(0, 100);
+		menuP.setSize(1600, 700);
+		menuP.setLocation(0, 200);
 	}
 
 	@Override
@@ -67,15 +63,15 @@ public class StartPanel extends JPanel
 
 			add(startButton);// Add to panel
 			startButton.setSize(125, 50);
-			startButton.setLocation(200, 125);
+			startButton.setLocation(525, 275);
 
 			add(imgP1);
-			imgP1.setSize(100, 100);
-			imgP1.setLocation(350, 100);
+			imgP1.setSize(200, 200);
+			imgP1.setLocation(700, 200);
 
 			add(helpButton);
 			helpButton.setSize(125, 50);
-			helpButton.setLocation(475, 125);
+			helpButton.setLocation(950, 275);
 		}
 
 		@Override
@@ -86,22 +82,13 @@ public class StartPanel extends JPanel
 			if (command.equals("Start"))// conditional to determine which button
 										// was clicked and how to react
 			{
-				System.out.println("Start Game");
 				mp.getCards().next(mp);
 			}
 			if (command.equals("How To Play"))
 			{
-				System.out.println("How to Play");// Create Pop Up
-				String header = "qwertyuiopasdfghjklzxcvbnm,";
-				JFrame frame = new JFrame("How To Play");
-				frame.setLocation(100, 100);
-				frame.setSize(300, 125);
-				frame.setLayout(new FlowLayout());
-				JLabel headingLabel = new JLabel(header);
-				frame.add(headingLabel);
-				frame.setDefaultCloseOperation(WindowConstants.DISPOSE_ON_CLOSE);
-				frame.setVisible(true);
-
+				// Create Pop Up
+				HowToPlay htp = new HowToPlay();
+				htp.run();
 			}
 			titleP.repaint();// Repaint any changes made to the canvas
 			repaint();
@@ -112,9 +99,8 @@ public class StartPanel extends JPanel
 		{
 			super.paintComponent(g); // draw background
 			setBackground(Color.BLACK); // Set colour scheme
-			System.out.println("Display Image");
 			g.setColor(Color.CYAN);
-			g.fillRect(0, 0, 800, 10);
+			g.fillRect(0, 0, 1600, 10);
 		}
 
 		class ImagePanel1 extends JPanel
@@ -125,8 +111,7 @@ public class StartPanel extends JPanel
 			{
 				super.paintComponent(g);
 				setBackground(Color.BLACK);
-				System.out.println("Drawing Image");
-				g.drawImage(menuImg, 0, 0, 100, 100, this);
+				g.drawImage(menuImg, 0, 0, 200, 200, this);
 			}
 		}
 	}
@@ -149,7 +134,7 @@ public class StartPanel extends JPanel
 
 			imgP2 = new ImagePanel2();
 			add(imgP2);
-			imgP2.setSize(800, 100);
+			imgP2.setSize(1600, 200);
 			imgP2.setLocation(0, 0);
 		}
 
@@ -168,8 +153,7 @@ public class StartPanel extends JPanel
 			{
 				super.paintComponent(g);
 				setBackground(Color.BLACK);
-				System.out.println("Drawing Image");
-				g.drawImage(titleImg, 250, 5, 290, 95, this);
+				g.drawImage(titleImg, 500, 0, 600, 200, this);
 			}
 		}
 	}
