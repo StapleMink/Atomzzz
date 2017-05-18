@@ -9,6 +9,7 @@
  */
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
@@ -23,7 +24,7 @@ public class GamePanel extends JPanel implements ActionListener
 	private Electron[] electrons;
 	private JButton complete;
 	private int lives;
-	private final int level;
+	private int level;
 	private int eAdded;
 	private int eNeeded;
 	private boolean passed;
@@ -386,7 +387,7 @@ public class GamePanel extends JPanel implements ActionListener
 	}
 
 	// when complete is pressed
-	@Override
+
 	public void actionPerformed(ActionEvent e)
 	{
 		pressed = true;
@@ -396,7 +397,7 @@ public class GamePanel extends JPanel implements ActionListener
 	}
 
 	// UI drawing, including images
-	@Override
+
 	public void paintComponent(Graphics g)
 	{
 		setBackground(Color.BLACK);
@@ -418,6 +419,10 @@ public class GamePanel extends JPanel implements ActionListener
 		{
 			g.drawImage(heart, 1525, 5 + (70 * i), 65, 65, this);
 		}
+
+		// draw string that indicates level
+		g.setFont(new Font("Times New Roman", Font.PLAIN, 40));
+		g.drawString("Level " + level, 25, 220);
 
 	}
 }

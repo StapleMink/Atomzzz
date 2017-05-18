@@ -9,7 +9,6 @@
  */
 
 import java.awt.CardLayout;
-import java.awt.Graphics;
 
 import javax.swing.JPanel;
 
@@ -17,8 +16,8 @@ public class MainPanel extends JPanel
 {
 
 	// fields
-	private final CardLayout cards;
-	private final StartPanel sp;
+	private CardLayout cards;
+	private StartPanel sp;
 	private GamePanel gp;
 
 	// initialize fields, giving this instance of MainPanel
@@ -45,12 +44,6 @@ public class MainPanel extends JPanel
 	public void setGame(int whichLevel)
 	{
 		gp = new GamePanel(this, whichLevel);
+		add(gp, "game");
 	}
-
-	@Override
-	public void paintComponent(Graphics g)
-	{
-
-	}
-
 }

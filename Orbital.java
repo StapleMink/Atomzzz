@@ -13,11 +13,11 @@ import javax.swing.JPanel;
 public class Orbital extends JPanel
 {
 
-	private final boolean[] occupied;
-	private final Electron[] orbitalE;
-	private final int principleLevel;
-	private final char subLevel;
-	private final String name;
+	private boolean[] occupied;
+	private Electron[] orbitalE;
+	private int principleLevel;
+	private char subLevel;
+	private String name;
 	private int numE;
 
 	// constructor: initialize fields
@@ -66,14 +66,12 @@ public class Orbital extends JPanel
 		numE++;
 	}
 
-	@Override
 	public String getName()
 	{
 		return name;
 	}
 
 	// draw orbital in different color depending on name
-	@Override
 	public void paintComponent(Graphics g)
 	{
 		setBackground(Color.BLACK);

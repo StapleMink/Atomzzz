@@ -17,7 +17,7 @@ import javax.swing.JPanel;
 
 public class Electron extends JPanel implements MouseMotionListener, MouseListener
 {
-	private final boolean spin;
+	private boolean spin;
 	private int compX;
 	private int compY;
 	private int pressX;
@@ -26,7 +26,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	private String side;
 	private int origX, origY;
 	private boolean inOrbital;
-	private final GamePanel game;
+	private GamePanel game;
 	private int wherePlaced;
 	private boolean lastMoved;
 
@@ -51,8 +51,8 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	}
 
 	/*
-	 * The next several methods all return set a field variable so that they may
-	 * remain private;
+	 * The next several methods all return or set a field variable so that they
+	 * may remain private;
 	 */
 	public void setOrigX(int origX)
 	{
@@ -95,7 +95,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	}
 
 	// draw yellow circle to represent electron and arrow for spin
-	@Override
+
 	public void paintComponent(Graphics g)
 	{
 		g.setColor(Color.YELLOW);
@@ -115,7 +115,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	}
 
 	// method for dragging electron, if not in orbital
-	@Override
+
 	public void mouseDragged(MouseEvent e)
 	{
 		if (!inOrbital && !game.getDone())
@@ -131,18 +131,16 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 
 	}
 
-	@Override
 	public void mouseMoved(MouseEvent e)
 	{
 	}
 
-	@Override
 	public void mouseClicked(MouseEvent e)
 	{
 	}
 
 	// gets coordinates where mouse is pressed to know where to drag
-	@Override
+
 	public void mousePressed(MouseEvent e)
 	{
 		pressX = e.getX();
@@ -154,7 +152,7 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 	 * for after mouse drags electron figures out if in orbital, then places,
 	 * then checks if errors were made
 	 */
-	@Override
+
 	public void mouseReleased(MouseEvent e)
 	{
 		if (selected && !inOrbital)
@@ -216,12 +214,10 @@ public class Electron extends JPanel implements MouseMotionListener, MouseListen
 		}
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent e)
 	{
 	}
 
-	@Override
 	public void mouseExited(MouseEvent e)
 	{
 	}

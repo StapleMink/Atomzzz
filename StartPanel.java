@@ -11,9 +11,9 @@ import javax.swing.JPanel;
 //<<<<<<<<<<<<<<<<<<<<<<<<<<BEGIN CODE FOR STARTPANEL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 public class StartPanel extends JPanel
 {
-	private final TitlePanel titleP;// Instantiate Fields
-	private final MenuPanel menuP;
-	private final MainPanel mp;
+	private TitlePanel titleP;// Instantiate Fields
+	private MenuPanel menuP;
+	private MainPanel mp;
 
 	public StartPanel(MainPanel main)// Set BorderLayout
 	{
@@ -29,7 +29,6 @@ public class StartPanel extends JPanel
 		menuP.setLocation(0, 200);
 	}
 
-	@Override
 	public void paintComponent(Graphics g)// Set background colour
 	{
 		setBackground(Color.CYAN);
@@ -40,11 +39,11 @@ public class StartPanel extends JPanel
 	// MENUPANEL>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 	public class MenuPanel extends JPanel implements ActionListener
 	{
-		private final JButton startButton;// create buttons in MenuPanel()
-		private final JButton helpButton;
+		private JButton startButton;// create buttons in MenuPanel()
+		private JButton helpButton;
 		private Image menuImg;
-		private final String menuImgName;
-		private final ImagePanel1 imgP1;
+		private String menuImgName;
+		private ImagePanel1 imgP1;
 
 		public MenuPanel()// Constructor for MenuPanel()
 		{
@@ -74,7 +73,6 @@ public class StartPanel extends JPanel
 			helpButton.setLocation(950, 275);
 		}
 
-		@Override
 		public void actionPerformed(ActionEvent evt)// Get action from JButtons
 		{
 			String command = evt.getActionCommand();// get name of button
@@ -82,7 +80,8 @@ public class StartPanel extends JPanel
 			if (command.equals("Start"))// conditional to determine which button
 										// was clicked and how to react
 			{
-				mp.getCards().next(mp);
+				mp.setGame(1);
+				mp.getCards().show(mp, "game");
 			}
 			if (command.equals("How To Play"))
 			{
@@ -94,7 +93,6 @@ public class StartPanel extends JPanel
 			repaint();
 		}
 
-		@Override
 		public void paintComponent(Graphics g) // paint component for MenuPanel
 		{
 			super.paintComponent(g); // draw background
@@ -105,7 +103,7 @@ public class StartPanel extends JPanel
 
 		class ImagePanel1 extends JPanel
 		{
-			@Override
+
 			public void paintComponent(Graphics g) // paint component for
 													// TitlePanel
 			{
@@ -121,8 +119,8 @@ public class StartPanel extends JPanel
 	public class TitlePanel extends JPanel
 	{
 		private Image titleImg;
-		private final String titleImgName;
-		private final ImagePanel2 imgP2;
+		private String titleImgName;
+		private ImagePanel2 imgP2;
 		private JButton testButton;
 
 		public TitlePanel()
@@ -138,7 +136,6 @@ public class StartPanel extends JPanel
 			imgP2.setLocation(0, 0);
 		}
 
-		@Override
 		public void paintComponent(Graphics g) // paint component for TitlePanel
 		{
 			setBackground(Color.BLACK);
@@ -147,7 +144,7 @@ public class StartPanel extends JPanel
 
 		class ImagePanel2 extends JPanel
 		{
-			@Override
+
 			public void paintComponent(Graphics g) // paint component for
 													// TitlePanel
 			{

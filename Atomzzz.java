@@ -1,3 +1,4 @@
+
 /*Gaurav Datta
  * 5/1/17
  * Atomzzz.java
@@ -8,19 +9,17 @@ import javax.swing.JFrame;
 
 public class Atomzzz
 {
-	private final JFrame frame;
-	private final MainPanel mp;
-	StartPanel sp;
-	GamePanel gp;
+	private JFrame frame;
+	private MainPanel mp;
 
 	public static void main(String[] args)
 	{
 		new Atomzzz();
 	}
 
-	public Atomzzz() // This is the CONSTRUCTOR method
+	public Atomzzz() // This is the Constructor
 	{
-		// The entry point into your program
+		// The entry point into the program
 		frame = new JFrame("");
 		frame.setSize(1600, 900); // Set the size of the JFrame
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
